@@ -1,6 +1,4 @@
-require 'docusign_esign'
-require 'base64'
-require 'uri'
+# frozen_string_literal: true
 
 describe 'DocuSign Ruby Client Tests' do
 	def login
@@ -41,7 +39,7 @@ describe 'DocuSign Ruby Client Tests' do
 					end
 				end
 			end
-		rescue => e
+		rescue
 		  puts "Error during processing: #{$!}"
 		  # puts "Backtrace:\n\t#{e.backtrace.join("\n\t")}"
 		end
@@ -61,7 +59,7 @@ describe 'DocuSign Ruby Client Tests' do
 		if(!$account_id.nil?)
 			# STEP 2: Create envelope definition
   			# Add a document to the envelope
-			document_path = "../docs/Test.pdf"
+			document_path = "fixtures/docs/Test.pdf"
 			document_name = "Test.docx"
 			document = DocuSign_eSign::Document.new
 	  		document.document_base64 = Base64.encode64(File.open(document_path).read)
@@ -87,7 +85,7 @@ describe 'DocuSign Ruby Client Tests' do
 			if(is_embedded_signing)
 				signer.client_user_id = $client_user_id
 			end
-			
+
 			signer.tabs = tabs
 
 			# Add a recipient to sign the document
@@ -117,15 +115,15 @@ describe 'DocuSign Ruby Client Tests' do
 
   	$expires_in_seconds = 3600 #1 hour
   	$auth_server = 'account-d.docusign.com'
-  	$private_key_filename = '../docs/private.pem'
-    
+  	$private_key_filename = 'fixtures/docs/private.pem'
+
     $recipient_name = "Ruby SDK"
 
     # Required for embedded signing url
     $client_user_id = '1234'
     $return_url = 'https://developers.docusign.com/'
     $authentication_method = 'email'
-	    
+
     $template_id = ''
     $envelope_id = nil
 
@@ -160,7 +158,7 @@ describe 'DocuSign Ruby Client Tests' do
   	describe '.create' do
   		context 'request signature on a document' do
   			it 'successfully create an envelope' do
-	  			
+
 	  			# STEP 1: Login and get the account_id & base_uri
 	  			login()
 
@@ -168,7 +166,7 @@ describe 'DocuSign Ruby Client Tests' do
 
 	  			expect(envelope_summary).to be_truthy
 
-	  			if !envelope_summary.nil?
+					if !envelope_summary.nil?
 						$envelope_id = envelope_summary.envelope_id
 						expect($envelope_id).to be_truthy
 					end
@@ -184,7 +182,7 @@ describe 'DocuSign Ruby Client Tests' do
   		context 'sender view' do
   			it 'successfully returns sender view url' do
   				view_url = nil
-  				
+
   				if !$envelope_id.nil?
   					api_client = create_api_client()
 						envelopes_api = DocuSign_eSign::EnvelopesApi.new(api_client)
@@ -270,7 +268,7 @@ describe 'DocuSign Ruby Client Tests' do
   				if !$envelope_id.nil?
 					api_client = create_api_client()
 					envelopes_api = DocuSign_eSign::EnvelopesApi.new(api_client)
-					
+
 					options = DocuSign_eSign::GetEnvelopeOptions.new
 
 					envelope_summary = envelopes_api.get_envelope($account_id, $envelope_id, options)
@@ -290,7 +288,7 @@ describe 'DocuSign Ruby Client Tests' do
   				if !$envelope_id.nil?
 					api_client = create_api_client()
 					templates_api = DocuSign_eSign::TemplatesApi.new(api_client)
-					
+
 					options = DocuSign_eSign::GetEnvelopeOptions.new
 					$template_id = ENV["TEMPLATE_ID"]
 
@@ -311,12 +309,10 @@ describe 'DocuSign Ruby Client Tests' do
   	describe '.list' do
   		context 'list envelopes' do
   			it 'successfully list envelope' do
-  				recipients = nil
-
   				envelope_ids = ""
 				count1 = 0
 				count2 = 0
-						
+
 				if !$envelope_id.nil?
   					api_client = create_api_client()
 					envelopes_api = DocuSign_eSign::EnvelopesApi.new(api_client)
@@ -352,8 +348,8 @@ describe 'DocuSign Ruby Client Tests' do
   			it 'successfully list envelope recipients' do
   				recipients = nil
 
-  				if !$envelope_id.nil?
-  					api_client = create_api_client()
+					if !$envelope_id.nil?
+						api_client = create_api_client()
 						envelopes_api = DocuSign_eSign::EnvelopesApi.new(api_client)
 
 						options = DocuSign_eSign::ListRecipientsOptions.new
@@ -372,10 +368,10 @@ describe 'DocuSign Ruby Client Tests' do
   			it 'successfully lists envelope status changes' do
   				envelopes_information = nil
 
-  				if !$envelope_id.nil?
+					if !$envelope_id.nil?
 						api_client = create_api_client()
 						envelopes_api = DocuSign_eSign::EnvelopesApi.new(api_client)
-						
+
 						options = DocuSign_eSign::ListStatusChangesOptions.new
 						options.from_date = Time.now.strftime("%Y-%m-%d")
 
@@ -393,7 +389,7 @@ describe 'DocuSign Ruby Client Tests' do
   			it 'successfully lists and download envelope documents' do
   				envelope_documents_result = nil
 
-  				if !$envelope_id.nil?
+					if !$envelope_id.nil?
 						api_client = create_api_client()
 						envelopes_api = DocuSign_eSign::EnvelopesApi.new(api_client)
 
